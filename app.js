@@ -1,6 +1,6 @@
-const clientId = 'YOUR_SPOTIFY_CLIENT_ID'; // Replace this!
+const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Replace this!
 const redirectUri = 'https://tetethv.github.io/forLOML/';
-const trackUri = 'spotify:track:4ZtFanR9U6ndgddUvNcjcG'; // V - Inner Child
+const trackUri = 'https://open.spotify.com/track/7G7mSV4BebkoHWwKTDvXu9?si=14c8518c8b8f414e // V - Winter Ahead
 
 document.getElementById('start').addEventListener('click', () => {
   const scopes = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
