@@ -1,35 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>V's Realm</title>
+  <meta charset="UTF-8">
+  <title>Play V - Inner Child</title>
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <style>
     body {
-      background: black;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       font-family: sans-serif;
-      flex-direction: column;
+      text-align: center;
+      padding: 100px;
     }
     button {
-      background: gold;
-      color: black;
-      border: none;
-      padding: 1em 2em;
-      font-size: 1.5em;
-      border-radius: 12px;
+      font-size: 18px;
+      padding: 10px 20px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>💜 Welcome to V's World 💜</h1>
-  <button id="start">Begin Experience</button>
+  <h1>Welcome to the V Fan Experience</h1>
+  <button id="start">Start</button>
+  <button id="play" style="display:none;">Play Song</button>
 
-  <script src="https://sdk.scdn.co/spotify-player.js"></script>
-  <script src="app.js"></script>
+  <script>
+    const clientId = 'YOUR_SPOTIFY_CLIENT_ID'; // <- Replace this!
+    const redirectUri = window.location.origin + window.location.pathname;
+    const trackUri = 'spotify:track:4ZtFanR9U6ndgddUvNcjcG'; // V - Inner Child
+
+    document.getElementById('start').addEventListener('click', () => {
+      const scopes = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
+      const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&response_type=token&show_dialog=true`;
+      window.location.href = authUrl;
+    });
+
+    window.onload = () => {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const token = params.get('access_token');
+
+      if (token) {
+        // Remove token from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        document.getElementById('start').style.display = 'none';
+        document.getElementById('play').style.display = 'inline-block';
+
+        let player;
+
+        window.onSpotifyWebPlaybackSDKReady = () => {
+          player = new Spotify.Player({
+            name: 'V Fan Player',
+            getOAuthToken: cb => cb(token),
+            volume: 0.8
+          });
+
+          player.addListener('ready', ({ device_id }) => {
+            console.log('Player is ready with device ID', device_id);
+
+            document.getElementById('play').addEventListener('click', () => {
+              fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ uris: [trackUri] }),
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              }).catch(err => {
+                alert('Failed to play track. Make sure you have Spotify open and are Premium.');
+                console.error(err);
+              });
+            });
+          });
+
+          player.addListener('initialization_error', ({ message }) => console.error(message));
+          player.addListener('authentication_error', ({ message }) => console.error(message));
+          player.addListener('account_error', ({ message }) => console.error(message));
+          player.addListener('playback_error', ({ message }) => console.error(message));
+
+          player.connect();
+        };
+      }
+    };
+  </script>
 </body>
 </html>
+
