@@ -9,6 +9,10 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 
+  <!-- Meta Description & Favicon -->
+  <meta name="description" content="Listen to V's Winter Ahead with a smooth jazzy interface. Built by a fan with love.">
+  <link rel="icon" href="https://tetethv.github.io/test/favicon.ico" />
+
   <style>
     body {
       margin: 0;
@@ -75,10 +79,9 @@
   <button id="play">Play Song</button>
 
   <script>
-    const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Replace this!
+    const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Your real client ID
     const redirectUri = window.location.origin + window.location.pathname;
     const trackUri = 'spotify:track:7G7mSV4BebkoHWwKTDvXu9'; // V - Winter Ahead
-
 
     document.getElementById('start').addEventListener('click', () => {
       const scopes = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
@@ -104,7 +107,7 @@
           });
 
           player.addListener('ready', ({ device_id }) => {
-            console.log('Ready with Device ID', device_id);
+            console.log('✅ Ready with Device ID', device_id);
 
             document.getElementById('play').addEventListener('click', () => {
               fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
@@ -114,17 +117,24 @@
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
                 }
-              }).catch(err => {
+              })
+              .then(() => {
+                document.getElementById('play').textContent = '🎶 Playing...';
+              })
+              .catch(err => {
                 alert('⚠️ Error playing the track. Ensure Spotify is open and you have Premium.');
                 console.error(err);
               });
             });
           });
 
-          // Optional error handlers
+          // Error handlers
           player.addListener('initialization_error', ({ message }) => console.error('Init error:', message));
           player.addListener('authentication_error', ({ message }) => console.error('Auth error:', message));
-          player.addListener('account_error', ({ message }) => console.error('Account error:', message));
+          player.addListener('account_error', ({ message }) => {
+            alert('⚠️ Spotify Premium is required to play music in the browser.');
+            console.error('Account error:', message);
+          });
           player.addListener('playback_error', ({ message }) => console.error('Playback error:', message));
 
           player.connect();
