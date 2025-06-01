@@ -1,6 +1,7 @@
 const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Replace this!
 const redirectUri = 'https://tetethv.github.io/test/';
-const trackUri = 'https://open.spotify.com/track/7G7mSV4BebkoHWwKTDvXu9?si=14c8518c8b8f414e // V - Winter Ahead
+const trackUri = 'spotify:track:7G7mSV4BebkoHWwKTDvXu9'; // V - Winter Ahead
+
 
 document.getElementById('start').addEventListener('click', () => {
   const scopes = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
@@ -14,7 +15,8 @@ window.onload = () => {
   const token = params.get('access_token');
 
   if (token) {
-    window.history.replaceState({}, document.title, "/");
+ window.history.replaceState({}, document.title, window.location.pathname);
+
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new Spotify.Player({
