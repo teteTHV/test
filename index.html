@@ -2,30 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Play V - Inner Child</title>
+  <title>WINTER AHEAD | Jazzy and warm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
     body {
-      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #f5e6ff, #e0f7fa);
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding: 100px;
+      transition: all 0.3s ease;
     }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+      color: #5e35b1;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #555;
+    }
+
     button {
-      font-size: 18px;
-      padding: 10px 20px;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 40px;
+      background: #7e57c2;
+      color: white;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.25s ease;
+    }
+
+    button:hover {
+      background: #673ab7;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #play {
+      display: none;
+      margin-top: 20px;
+      background-color: #26a69a;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to the V Fan Experience</h1>
+  <h1>✨ V - Winter Ahead</h1>
+  <p>Click below to begin your musical journey.</p>
   <button id="start">Start</button>
-  <button id="play" style="display:none;">Play Song</button>
+  <button id="play">Play Song</button>
 
   <script>
-    const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // <- Replace this!
+    const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Replace this!
     const redirectUri = window.location.origin + window.location.pathname;
-    const trackUri = 'spotify:track:4ZtFanR9U6ndgddUvNcjcG'; // V - Inner Child
+    const trackUri = 'spotify:track:7G7mSV4BebkoHWwKTDvXu9'; // V - Winter Ahead
+
 
     document.getElementById('start').addEventListener('click', () => {
       const scopes = 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state';
@@ -39,23 +92,19 @@
       const token = params.get('access_token');
 
       if (token) {
-        // Remove token from URL
         window.history.replaceState({}, document.title, window.location.pathname);
-        
         document.getElementById('start').style.display = 'none';
         document.getElementById('play').style.display = 'inline-block';
 
-        let player;
-
         window.onSpotifyWebPlaybackSDKReady = () => {
-          player = new Spotify.Player({
+          const player = new Spotify.Player({
             name: 'V Fan Player',
             getOAuthToken: cb => cb(token),
             volume: 0.8
           });
 
           player.addListener('ready', ({ device_id }) => {
-            console.log('Player is ready with device ID', device_id);
+            console.log('Ready with Device ID', device_id);
 
             document.getElementById('play').addEventListener('click', () => {
               fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
@@ -66,16 +115,17 @@
                   'Content-Type': 'application/json'
                 }
               }).catch(err => {
-                alert('Failed to play track. Make sure you have Spotify open and are Premium.');
+                alert('⚠️ Error playing the track. Ensure Spotify is open and you have Premium.');
                 console.error(err);
               });
             });
           });
 
-          player.addListener('initialization_error', ({ message }) => console.error(message));
-          player.addListener('authentication_error', ({ message }) => console.error(message));
-          player.addListener('account_error', ({ message }) => console.error(message));
-          player.addListener('playback_error', ({ message }) => console.error(message));
+          // Optional error handlers
+          player.addListener('initialization_error', ({ message }) => console.error('Init error:', message));
+          player.addListener('authentication_error', ({ message }) => console.error('Auth error:', message));
+          player.addListener('account_error', ({ message }) => console.error('Account error:', message));
+          player.addListener('playback_error', ({ message }) => console.error('Playback error:', message));
 
           player.connect();
         };
@@ -84,4 +134,3 @@
   </script>
 </body>
 </html>
-
