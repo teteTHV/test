@@ -1,5 +1,5 @@
 const clientId = '1d07a5a57ba24054a391b57efed55ca5'; // Replace this!
-const redirectUri = 'https://tetethv.github.io/forLOML/';
+const redirectUri = 'https://tetethv.github.io/test/';
 const trackUri = 'https://open.spotify.com/track/7G7mSV4BebkoHWwKTDvXu9?si=14c8518c8b8f414e // V - Winter Ahead
 
 document.getElementById('start').addEventListener('click', () => {
